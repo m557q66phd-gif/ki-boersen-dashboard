@@ -188,24 +188,24 @@ else:
     st.divider()
 
    def ki_auswertung(asset_name, news_text):
-    # Ab hier MUSS alles eingerückt sein (4 Leerzeichen)
-    prompt = f"""
-    Du bist ein präziser Finanzexperte. Analysiere diese aktuellen Schlagzeilen für {asset_name}:
-    {news_text}
-    
-    Bitte antworte exakt in diesem Format auf Deutsch:
-    
-    **📰 Kurz-Zusammenfassung der Nachrichten:**
-    (Fasse hier in 2 bis 3 extrem kurzen Stichpunkten zusammen, was die Hauptthemen dieser Artikel sind)
-    
-    **🎯 Gesamtauswertung & Fazit:**
-    (Gebe in 1 bis maximal 2 Sätzen dein Fazit ab: Ist die Stimmung eher bullisch, bearisch oder neutral für den Preis und warum?)
-    """
-    
-    try:
-        # Auch dieses try/except muss eingerückt sein
-        time.sleep(1) 
-        antwort = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
-        return antwort.text.strip()
-    except Exception as e:
-        return f"KI-Analyse aktuell nicht verfügbar: {e}"
+                    # Ab hier MUSS alles eingerückt sein (4 Leerzeichen)
+                    prompt = f"""
+                    Du bist ein präziser Finanzexperte. Analysiere diese aktuellen Schlagzeilen für {asset_name}:
+                    {news_text}
+                    
+                    Bitte antworte exakt in diesem Format auf Deutsch:
+                    
+                    **📰 Kurz-Zusammenfassung der Nachrichten:**
+                    (Fasse hier in 2 bis 3 extrem kurzen Stichpunkten zusammen, was die Hauptthemen dieser Artikel sind)
+                    
+                    **🎯 Gesamtauswertung & Fazit:**
+                    (Gebe in 1 bis maximal 2 Sätzen dein Fazit ab: Ist die Stimmung eher bullisch, bearisch oder neutral für den Preis und warum?)
+                    """
+                    
+                    try:
+                        # Auch dieses try/except muss eingerückt sein
+                        time.sleep(1) 
+                        antwort = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+                        return antwort.text.strip()
+                    except Exception as e:
+                        return f"KI-Analyse aktuell nicht verfügbar: {e}"
