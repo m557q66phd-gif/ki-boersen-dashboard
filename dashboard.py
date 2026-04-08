@@ -80,15 +80,26 @@ else:
     fig.update_layout(template="plotly_dark", height=400, margin=dict(l=0,r=0,t=0,b=0))
     st.plotly_chart(fig, use_container_width=True)
 
-    # 3. Schlagzeilen (Klickbar & Erweitert)
+ # 3. Schlagzeilen (Klickbar & Erweitert)
     st.subheader(f"📰 Top Schlagzeilen für {auswahl}")
     text_fuer_ki = ""
     
     if news_liste:
-        # Wir zeigen jetzt bis zu 10 Nachrichten an
         for n in news_liste[:10]:
-            t = n.get('title') or (n.get('content') and n['content'].get('title')) or "Kein Titel verfügbar"
-            l = n.get('link') or (n.get('content') and n['content'].get('clickThroughUrl', {}).get('url')) or "https://finance.yahoo.com"
+            # 1. Titel extrem sicher auslesen
+            t = n.get('title')
+            if not t and isinstance(n.get('content'), dict):
+                t = n['content'].get('title')
+            t = t or "Kein Titel verfügbar"
+
+            # 2. Link extrem sicher auslesen (Der Bugfix!)
+            l = n.get('link')
+            if not l and isinstance(n.get('content'), dict):
+                click_info = n['content'].get('clickThroughUrl')
+                # Wir prüfen extra, ob click_info WIRKLICH ein Dictionary ist und nicht None
+                if isinstance(click_info, dict):
+                    l = click_info.get('url')
+            l = l or "https://finance.yahoo.com"
             
             st.markdown(f"- [{t}]({l})")
             text_fuer_ki += f"{t}. "
