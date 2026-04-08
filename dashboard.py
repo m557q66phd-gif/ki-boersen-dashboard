@@ -45,7 +45,7 @@ def ki_auswertung(asset_name, news_text):
     try:
         # Kleiner Puffer für die API
         time.sleep(1) 
-        antwort = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
+        antwort = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
         return antwort.text.strip()
     except Exception as e:
         return f"KI-Analyse aktuell nicht verfügbar: {e}"
