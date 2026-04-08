@@ -4,7 +4,6 @@ import pandas as pd
 import plotly.graph_objects as go
 import os
 import time
-import requests
 from dotenv import load_dotenv
 from google import genai
 
@@ -33,14 +32,9 @@ def berechne_rsi(daten_reihe, zeitraum=14):
 
 @st.cache_data(ttl=600)
 def lade_marktdaten(ticker):
-    # 1. Tarnung aufbauen (Wir geben uns als normaler Chrome-Browser aus)
-    session = requests.Session()
-    session.headers.update({
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    })
-    
-    # 2. Die getarnte Session an yfinance übergeben
-    aktie = yf.Ticker(ticker, session=session)
+    # Wir übergeben KEINE eigene Session mehr. yfinance nutzt jetzt
+    # automatisch das neue curl_cffi Paket im Hintergrund!
+    aktie = yf.Ticker(ticker)
     daten = aktie.history(period="6mo")
     
     if not daten.empty:
