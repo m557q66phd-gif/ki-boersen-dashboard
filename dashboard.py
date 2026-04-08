@@ -121,21 +121,40 @@ with st.spinner('Lade Daten und befrage die KI...'):
         st.info("ℹ️ **CHANCE/RISIKO:** Seitwärtsphase. Abwarten auf klare Signale.")
 
     # 4. News & KI
-    st.subheader("📰 KI-Fundamentalanalyse")
+    st.subheader("📰 KI-Fundamentalanalyse & Schlagzeilen")
     gesammelte_titel = ""
-
+    
     if news:
-        for artikel in news[:3]:
+        st.markdown("**Aktuelle Nachrichten (Klickbar):**")
+        
+        # HIER ERHÖHEN WIR DIE ANZAHL: [:5] bedeutet, er nimmt bis zu 5 Nachrichten
+        for artikel in news[:5]:
+            # 1. Titel sicher auslesen
             titel = artikel.get('title')
             if not titel and 'content' in artikel:
                 titel = artikel['content'].get('title')
+            
+            # 2. Link sicher auslesen (Yahoo hat die Links oft tief verschachtelt)
+            link = artikel.get('link')
+            if not link and 'content' in artikel:
+                click_info = artikel['content'].get('clickThroughUrl', {})
+                # Manchmal ist clickThroughUrl ein Dictionary, das die URL enthält
+                if isinstance(click_info, dict):
+                    link = click_info.get('url')
+            
+            # Fallback, falls absolut kein Link gefunden wird
+            if not link:
+                link = "https://finance.yahoo.com"
+                
+            # 3. Wenn ein Titel da ist, sammeln und als Markdown-Link ausgeben
             if titel:
                 gesammelte_titel += f"- {titel}\n"
-
-        st.markdown("**Aktuelle Schlagzeilen:**")
-        st.text(gesammelte_titel)
-
-        st.markdown("**Gemini Analyse:**")
+                # Streamlit Markdown für Links: [Sichtbarer Text](URL)
+                st.markdown(f"- [{titel}]({link})")
+        
+        st.markdown("---") # Eine optische Trennlinie
+        
+        st.markdown("**Gemini Analyse der obigen Schlagzeilen:**")
         ki_analyse = analysiere_news_mit_ki(auswahl, gesammelte_titel)
         st.write(ki_analyse)
     else:
