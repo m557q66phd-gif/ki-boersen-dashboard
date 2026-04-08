@@ -32,17 +32,29 @@ def berechne_rsi(daten_reihe, zeitraum=14):
 
 @st.cache_data(ttl=600)
 def lade_marktdaten(ticker):
-    # Wir übergeben KEINE eigene Session mehr. yfinance nutzt jetzt
-    # automatisch das neue curl_cffi Paket im Hintergrund!
     aktie = yf.Ticker(ticker)
-    daten = aktie.history(period="6mo")
     
+    # 1. Der Airbag für die Kursdaten
+    try:
+        daten = aktie.history(period="6mo")
+    except Exception as e:
+        print(f"Yahoo-Blockade bei Kursen: {e}")
+        # Wenn Yahoo blockt, geben wir leere Daten zurück, statt abzustürzen
+        daten = pd.DataFrame() 
+
     if not daten.empty:
         daten['SMA_20'] = daten['Close'].rolling(window=20).mean()
         daten['SMA_50'] = daten['Close'].rolling(window=50).mean()
         daten['RSI_14'] = berechne_rsi(daten['Close'], 14)
+    
+    # 2. Der Airbag für die Nachrichten
+    try:
+        news = aktie.news
+    except Exception as e:
+        print(f"Yahoo-Blockade bei News: {e}")
+        news = []
         
-    return daten, aktie.news
+    return daten, news
 
 def ki_auswertung(asset_name, news_text):
     prompt = f"""
